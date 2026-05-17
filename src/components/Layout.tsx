@@ -46,6 +46,8 @@ export function Layout() {
             <NavLink to="/sermons">Sermons</NavLink>
             <NavLink to="/departments">Departments</NavLink>
             <NavLink to="/giving">Giving</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
+            {user && <NavLink to="/profile">Profile</NavLink>}
             {user?.role === "ADMIN" && <NavLink to="/admin">Admin</NavLink>}
           </nav>
 
