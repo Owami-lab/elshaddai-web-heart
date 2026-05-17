@@ -63,6 +63,10 @@
   --color-gold-foreground: var(--gold-foreground);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
+  --shadow-gold: 0 10px 30px -10px oklch(0.74 0.13 75 / 0.45);
+  --shadow-elegant: 0 20px 50px -20px oklch(0.18 0.04 265 / 0.35);
+}
+  --font-body: var(--font-body);
 }
 
 :root {
