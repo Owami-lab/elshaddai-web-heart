@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { ReactNode } from "react";
+import { UserCircle } from "lucide-react";
 
 function NavLink({ to, children }: { to: string; children: ReactNode }) {
   return (
@@ -51,20 +52,24 @@ export function Layout() {
 
           <div className="flex items-center gap-3">
             {user ? (
-              <>
-                <span className="hidden text-sm text-primary-foreground/70 sm:inline">
-                  {user.username}
-                </span>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 text-sm font-medium text-primary-foreground/80 transition hover:text-gold"
+                >
+                  <UserCircle className="h-5 w-5" />
+                  <span className="hidden sm:inline">{user.name || user.username}</span>
+                </Link>
                 <button
                   onClick={() => {
                     logout();
                     router.navigate({ to: "/" });
                   }}
-                  className="rounded-md border border-primary-foreground/20 px-3 py-1.5 text-sm text-primary-foreground transition hover:bg-primary-foreground/10"
+                  className="rounded-md border border-red/40 bg-red px-3 py-1.5 text-sm font-medium text-white transition hover:bg-red/90"
                 >
                   Logout
                 </button>
-              </>
+              </div>
             ) : (
               <>
                 <Link

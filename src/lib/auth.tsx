@@ -1,10 +1,12 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { api } from "./api";
 
-type AuthUser = {
+export type AuthUser = {
   username: string;
   role: string;
   token: string;
+  name?: string;
+  email?: string;
 };
 
 type AuthCtx = {
@@ -40,14 +42,31 @@ function decodeJwt(token: string): { sub?: string; role?: string } | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
+  async function hydrateUser(token: string) {
+    const claims = decodeJwt(token);
+    if (!claims?.sub) return;
+    const base: AuthUser = {
+      username: claims.sub,
+      role: claims.role || "USER",
+      token,
+    };
+    try {
+      const all = await api<any[]>("/api/users", { auth: true });
+      const me = all.find((u) => u.username === claims.sub || u.email === claims.sub);
+      if (me) {
+        base.name = `${me.name || ""} ${me.surname || ""}`.trim();
+        base.email = me.email;
+        if (!base.name) base.name = me.username;
+      }
+    } catch {
+      /* ignore backend errors during hydration */
+    }
+    setUser(base);
+  }
+
   useEffect(() => {
     const token = localStorage.getItem("emi_token");
-    if (token) {
-      const claims = decodeJwt(token);
-      if (claims?.sub) {
-        setUser({ username: claims.sub, role: claims.role || "USER", token });
-      }
-    }
+    if (token) hydrateUser(token);
   }, []);
 
   async function login(usernameOrEmail: string, password: string) {
@@ -57,12 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       raw: true,
     });
     localStorage.setItem("emi_token", token);
-    const claims = decodeJwt(token);
-    setUser({
-      username: claims?.sub || usernameOrEmail,
-      role: claims?.role || "USER",
-      token,
-    });
+    await hydrateUser(token);
   }
 
   async function register(data: RegisterData) {
