@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SermonsRouteImport } from './routes/sermons'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
@@ -20,10 +21,16 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ForgotPasswordSentRouteImport } from './routes/forgot-password.sent'
 
 const SermonsRoute = SermonsRouteImport.update({
   id: '/sermons',
   path: '/sermons',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -76,6 +83,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ForgotPasswordSentRoute = ForgotPasswordSentRouteImport.update({
+  id: '/sent',
+  path: '/sent',
+  getParentRoute: () => ForgotPasswordRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -83,12 +95,14 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/departments': typeof DepartmentsRoute
-  '/forgot-password': typeof ForgotPasswordRoute
+  '/forgot-password': typeof ForgotPasswordRouteWithChildren
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sermons': typeof SermonsRoute
+  '/forgot-password/sent': typeof ForgotPasswordSentRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -96,12 +110,14 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/departments': typeof DepartmentsRoute
-  '/forgot-password': typeof ForgotPasswordRoute
+  '/forgot-password': typeof ForgotPasswordRouteWithChildren
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sermons': typeof SermonsRoute
+  '/forgot-password/sent': typeof ForgotPasswordSentRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -110,12 +126,14 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/contact': typeof ContactRoute
   '/departments': typeof DepartmentsRoute
-  '/forgot-password': typeof ForgotPasswordRoute
+  '/forgot-password': typeof ForgotPasswordRouteWithChildren
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sermons': typeof SermonsRoute
+  '/forgot-password/sent': typeof ForgotPasswordSentRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,7 +148,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/profile'
     | '/register'
+    | '/reset-password'
     | '/sermons'
+    | '/forgot-password/sent'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -143,7 +163,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/profile'
     | '/register'
+    | '/reset-password'
     | '/sermons'
+    | '/forgot-password/sent'
   id:
     | '__root__'
     | '/'
@@ -156,7 +178,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/profile'
     | '/register'
+    | '/reset-password'
     | '/sermons'
+    | '/forgot-password/sent'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -165,11 +189,12 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   ContactRoute: typeof ContactRoute
   DepartmentsRoute: typeof DepartmentsRoute
-  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRouteWithChildren
   GivingRoute: typeof GivingRoute
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SermonsRoute: typeof SermonsRoute
 }
 
@@ -180,6 +205,13 @@ declare module '@tanstack/react-router' {
       path: '/sermons'
       fullPath: '/sermons'
       preLoaderRoute: typeof SermonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -252,8 +284,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password/sent': {
+      id: '/forgot-password/sent'
+      path: '/sent'
+      fullPath: '/forgot-password/sent'
+      preLoaderRoute: typeof ForgotPasswordSentRouteImport
+      parentRoute: typeof ForgotPasswordRoute
+    }
   }
 }
+
+interface ForgotPasswordRouteChildren {
+  ForgotPasswordSentRoute: typeof ForgotPasswordSentRoute
+}
+
+const ForgotPasswordRouteChildren: ForgotPasswordRouteChildren = {
+  ForgotPasswordSentRoute: ForgotPasswordSentRoute,
+}
+
+const ForgotPasswordRouteWithChildren = ForgotPasswordRoute._addFileChildren(
+  ForgotPasswordRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -261,11 +312,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   ContactRoute: ContactRoute,
   DepartmentsRoute: DepartmentsRoute,
-  ForgotPasswordRoute: ForgotPasswordRoute,
+  ForgotPasswordRoute: ForgotPasswordRouteWithChildren,
   GivingRoute: GivingRoute,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SermonsRoute: SermonsRoute,
 }
 export const routeTree = rootRouteImport

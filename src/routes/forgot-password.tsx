@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { api } from "@/lib/api";
 
@@ -8,25 +8,26 @@ export const Route = createFileRoute("/forgot-password")({
 });
 
 function Forgot() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<{ kind: "idle" | "ok" | "err"; msg?: string }>({
-    kind: "idle",
-  });
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setStatus({ kind: "idle" });
+    setError(null);
     try {
-      const msg = await api<string>("/api/users/forgot-password", {
+      await api<string>("/api/users/forgot-password", {
         method: "POST",
         body: JSON.stringify({ email }),
         raw: true,
       });
-      setStatus({ kind: "ok", msg: msg || "If that email exists, a reset link was sent." });
+      navigate({ to: "/forgot-password/sent", search: { email } });
     } catch (err: any) {
-      setStatus({ kind: "err", msg: err.message });
+      // Treat any backend response as "sent" to avoid leaking which emails exist.
+      navigate({ to: "/forgot-password/sent", search: { email } });
+      setError(err?.message ?? null);
     } finally {
       setLoading(false);
     }
@@ -61,14 +62,9 @@ function Forgot() {
           {loading ? "Sending…" : "Send reset link"}
         </button>
 
-        {status.kind === "ok" && (
-          <p className="mt-4 rounded-md border border-gold/30 bg-gold/10 p-3 text-sm text-primary">
-            {status.msg}
-          </p>
-        )}
-        {status.kind === "err" && (
+        {error && (
           <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
-            {status.msg}
+            {error}
           </p>
         )}
 
