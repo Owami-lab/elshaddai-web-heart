@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SermonsRouteImport } from './routes/sermons'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GivingRouteImport } from './routes/giving'
 import { Route as DepartmentsRouteImport } from './routes/departments'
@@ -26,6 +27,11 @@ const SermonsRoute = SermonsRouteImport.update({
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/departments': typeof DepartmentsRoute
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sermons': typeof SermonsRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/departments': typeof DepartmentsRoute
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sermons': typeof SermonsRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/departments': typeof DepartmentsRoute
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sermons': typeof SermonsRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/departments'
     | '/giving'
     | '/login'
+    | '/profile'
     | '/register'
     | '/sermons'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/departments'
     | '/giving'
     | '/login'
+    | '/profile'
     | '/register'
     | '/sermons'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/departments'
     | '/giving'
     | '/login'
+    | '/profile'
     | '/register'
     | '/sermons'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   DepartmentsRoute: typeof DepartmentsRoute
   GivingRoute: typeof GivingRoute
   LoginRoute: typeof LoginRoute
+  ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   SermonsRoute: typeof SermonsRoute
 }
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -202,9 +222,20 @@ const rootRouteChildren: RootRouteChildren = {
   DepartmentsRoute: DepartmentsRoute,
   GivingRoute: GivingRoute,
   LoginRoute: LoginRoute,
+  ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   SermonsRoute: SermonsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
