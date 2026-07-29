@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerifySentRouteImport } from './routes/verify-sent'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as SermonsRouteImport } from './routes/sermons'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -18,7 +20,21 @@ import { Route as DepartmentsRouteImport } from './routes/departments'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminSermonsRouteImport } from './routes/admin/sermons'
+import { Route as AdminProfileRouteImport } from './routes/admin/profile'
+import { Route as AdminGivingRouteImport } from './routes/admin/giving'
+import { Route as AdminDepartmentsRouteImport } from './routes/admin/departments'
 
+const VerifySentRoute = VerifySentRouteImport.update({
+  id: '/verify-sent',
+  path: '/verify-sent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SermonsRoute = SermonsRouteImport.update({
   id: '/sermons',
   path: '/sermons',
@@ -64,40 +80,78 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSermonsRoute = AdminSermonsRouteImport.update({
+  id: '/sermons',
+  path: '/sermons',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfileRoute = AdminProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminGivingRoute = AdminGivingRouteImport.update({
+  id: '/giving',
+  path: '/giving',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDepartmentsRoute = AdminDepartmentsRouteImport.update({
+  id: '/departments',
+  path: '/departments',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/departments': typeof DepartmentsRoute
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sermons': typeof SermonsRoute
+  '/verify': typeof VerifyRoute
+  '/verify-sent': typeof VerifySentRoute
+  '/admin/departments': typeof AdminDepartmentsRoute
+  '/admin/giving': typeof AdminGivingRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/sermons': typeof AdminSermonsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/departments': typeof DepartmentsRoute
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sermons': typeof SermonsRoute
+  '/verify': typeof VerifyRoute
+  '/verify-sent': typeof VerifySentRoute
+  '/admin/departments': typeof AdminDepartmentsRoute
+  '/admin/giving': typeof AdminGivingRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/sermons': typeof AdminSermonsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/departments': typeof DepartmentsRoute
   '/giving': typeof GivingRoute
   '/login': typeof LoginRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/sermons': typeof SermonsRoute
+  '/verify': typeof VerifyRoute
+  '/verify-sent': typeof VerifySentRoute
+  '/admin/departments': typeof AdminDepartmentsRoute
+  '/admin/giving': typeof AdminGivingRoute
+  '/admin/profile': typeof AdminProfileRoute
+  '/admin/sermons': typeof AdminSermonsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +165,12 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/sermons'
+    | '/verify'
+    | '/verify-sent'
+    | '/admin/departments'
+    | '/admin/giving'
+    | '/admin/profile'
+    | '/admin/sermons'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +182,12 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/sermons'
+    | '/verify'
+    | '/verify-sent'
+    | '/admin/departments'
+    | '/admin/giving'
+    | '/admin/profile'
+    | '/admin/sermons'
   id:
     | '__root__'
     | '/'
@@ -133,22 +199,44 @@ export interface FileRouteTypes {
     | '/profile'
     | '/register'
     | '/sermons'
+    | '/verify'
+    | '/verify-sent'
+    | '/admin/departments'
+    | '/admin/giving'
+    | '/admin/profile'
+    | '/admin/sermons'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   DepartmentsRoute: typeof DepartmentsRoute
   GivingRoute: typeof GivingRoute
   LoginRoute: typeof LoginRoute
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   SermonsRoute: typeof SermonsRoute
+  VerifyRoute: typeof VerifyRoute
+  VerifySentRoute: typeof VerifySentRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-sent': {
+      id: '/verify-sent'
+      path: '/verify-sent'
+      fullPath: '/verify-sent'
+      preLoaderRoute: typeof VerifySentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sermons': {
       id: '/sermons'
       path: '/sermons'
@@ -212,19 +300,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/sermons': {
+      id: '/admin/sermons'
+      path: '/sermons'
+      fullPath: '/admin/sermons'
+      preLoaderRoute: typeof AdminSermonsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profile': {
+      id: '/admin/profile'
+      path: '/profile'
+      fullPath: '/admin/profile'
+      preLoaderRoute: typeof AdminProfileRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/giving': {
+      id: '/admin/giving'
+      path: '/giving'
+      fullPath: '/admin/giving'
+      preLoaderRoute: typeof AdminGivingRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/departments': {
+      id: '/admin/departments'
+      path: '/departments'
+      fullPath: '/admin/departments'
+      preLoaderRoute: typeof AdminDepartmentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminDepartmentsRoute: typeof AdminDepartmentsRoute
+  AdminGivingRoute: typeof AdminGivingRoute
+  AdminProfileRoute: typeof AdminProfileRoute
+  AdminSermonsRoute: typeof AdminSermonsRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDepartmentsRoute: AdminDepartmentsRoute,
+  AdminGivingRoute: AdminGivingRoute,
+  AdminProfileRoute: AdminProfileRoute,
+  AdminSermonsRoute: AdminSermonsRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   DepartmentsRoute: DepartmentsRoute,
   GivingRoute: GivingRoute,
   LoginRoute: LoginRoute,
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   SermonsRoute: SermonsRoute,
+  VerifyRoute: VerifyRoute,
+  VerifySentRoute: VerifySentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

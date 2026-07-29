@@ -12,4 +12,17 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      proxy: {
+        // Proxy API calls to backend to avoid CORS and allow credentialed requests during dev
+        "/api": {
+          target: "http://localhost:8080",
+          changeOrigin: true,
+          secure: false,
+          ws: false,
+        },
+      },
+    },
+  },
 });

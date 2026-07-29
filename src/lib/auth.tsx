@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { api } from "./api";
+import { api, readStorageItem, removeStorageItem, writeStorageItem } from "./api";
 
 export type AuthUser = {
   username: string;
@@ -51,7 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       token,
     };
     try {
-      const all = await api<any[]>("/api/users", { auth: true });
+      const all = await api<
+        Array<{ username?: string; email?: string; name?: string; surname?: string }>
+      >("/api/users", { auth: true });
       const me = all.find((u) => u.username === claims.sub || u.email === claims.sub);
       if (me) {
         base.name = `${me.name || ""} ${me.surname || ""}`.trim();
@@ -65,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("emi_token");
+    const token = readStorageItem("emi_token");
     if (token) hydrateUser(token);
   }, []);
 
@@ -75,20 +77,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: JSON.stringify({ usernameOrEmail, password }),
       raw: true,
     });
-    localStorage.setItem("emi_token", token);
+    writeStorageItem("emi_token", token);
+    writeStorageItem("token", token);
     await hydrateUser(token);
   }
 
   async function register(data: RegisterData) {
-    await api("/api/users/register", {
+    // Return parsed backend response so callers can react (e.g. pendingVerification)
+    return await api("/api/users/register", {
       method: "POST",
       body: JSON.stringify(data),
-      raw: true,
     });
   }
 
   function logout() {
-    localStorage.removeItem("emi_token");
+    removeStorageItem("emi_token");
+    removeStorageItem("token");
     setUser(null);
   }
 

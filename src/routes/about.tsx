@@ -6,7 +6,8 @@ export const Route = createFileRoute("/about")({
       { title: "About — Elshaddai Ministries International" },
       {
         name: "description",
-        content: "Learn about our mission, vision and pastoral leadership at Elshaddai Ministries International.",
+        content:
+          "Learn about our mission, vision and pastoral leadership at Elshaddai Ministries International.",
       },
     ],
   }),
@@ -35,8 +36,8 @@ function About() {
         <div className="rounded-xl border border-border bg-card p-8">
           <h2 className="font-display text-2xl text-primary">Our Vision</h2>
           <p className="mt-3 text-muted-foreground">
-            A thriving, multi-generational community transformed by God's word and empowered by
-            His Spirit.
+            A thriving, multi-generational community transformed by God's word and empowered by His
+            Spirit.
           </p>
         </div>
       </div>

@@ -34,10 +34,24 @@ function Register() {
     }
     setLoading(true);
     try {
-      await register(data as any);
-      navigate({ to: "/login" });
-    } catch (e: any) {
-      setErr(e.message || "Registration failed");
+      const res = await register(data as Record<string, string>);
+      // backend may return { pendingVerification: true } or { recovered: true }
+      const email = encodeURIComponent((data.email as string) || "");
+      if (res && (res.pendingVerification || res.recovered)) {
+        navigate({ to: `/verify-sent?email=${email}` });
+      } else {
+        navigate({ to: "/login" });
+      }
+    } catch (e: unknown) {
+      // backend may return JSON like { message: 'Email already exists' }
+      let msg = e instanceof Error ? e.message : "Registration failed";
+      try {
+        const parsed = JSON.parse(msg);
+        if (parsed && parsed.message) msg = parsed.message;
+      } catch {
+        /* not JSON */
+      }
+      setErr(msg);
     } finally {
       setLoading(false);
     }

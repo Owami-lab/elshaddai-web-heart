@@ -29,8 +29,8 @@ function Index() {
             A house of worship for <em className="text-gold not-italic">every</em> nation.
           </h1>
           <p className="max-w-xl text-lg text-primary-foreground/80">
-            Elshaddai Ministries International is a thriving family of believers gathered around
-            the unchanging word of God, growing in love and serving our city.
+            Elshaddai Ministries International is a Christ-centered church committed to  <i>Reaching Nations with the Gospel </i> 
+             through the preaching of God's Word, prayer, worship, and the love of Christ.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
@@ -55,11 +55,11 @@ function Index() {
           {[
             {
               title: "Sunday Services",
-              body: "Two services every Sunday — 9:00 AM and 11:00 AM. Children's church available.",
+              body: "Morning service every Sunday at 10:00 - 13:00. Children's church available.",
             },
             {
               title: "Bible Study",
-              body: "Wednesdays at 6:30 PM. Dig deeper into the scriptures with our pastors.",
+              body: "Monday and Wednesdays at 6:00 PM. Dig deeper into the scriptures with our pastors.",
             },
             {
               title: "Community",

@@ -46,9 +46,7 @@ function Profile() {
             {user.name?.charAt(0) || user.username.charAt(0)}
           </div>
           <div>
-            <h2 className="font-display text-2xl text-primary">
-              {user.name || user.username}
-            </h2>
+            <h2 className="font-display text-2xl text-primary">{user.name || user.username}</h2>
             <p className="text-sm text-muted-foreground">{user.email}</p>
           </div>
         </div>

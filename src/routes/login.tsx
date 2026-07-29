@@ -13,6 +13,7 @@ function Login() {
   const [usernameOrEmail, setU] = useState("");
   const [password, setP] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -22,8 +23,18 @@ function Login() {
     try {
       await login(usernameOrEmail, password);
       navigate({ to: "/" });
-    } catch (e: any) {
-      setErr(e.message || "Login failed");
+    } catch (e: unknown) {
+      let msg = e instanceof Error ? e.message : "Login failed";
+      try {
+        const parsed = JSON.parse(msg);
+        if (parsed && parsed.message) msg = parsed.message;
+      } catch {
+        // not JSON
+      }
+      setErr(msg);
+      if (msg.toLowerCase().includes("verify") || msg.toLowerCase().includes("verified") || msg.toLowerCase().includes("not verified")) {
+        setUnverifiedEmail(usernameOrEmail);
+      }
     } finally {
       setLoading(false);
     }
@@ -58,6 +69,11 @@ function Login() {
           <p className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
             {err}
           </p>
+        )}
+        {unverifiedEmail && (
+          <div className="mt-3 rounded-md border border-muted/30 bg-muted/5 p-3 text-sm">
+            Your account is not verified. <a href={`/verify-sent?email=${encodeURIComponent(unverifiedEmail)}`} className="font-semibold text-gold">Resend verification</a>
+          </div>
         )}
         <button
           disabled={loading}
